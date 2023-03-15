@@ -6,7 +6,7 @@ put melons in a shopping cart.
 Authors: Joel Burton, Christian Fernandez, Meggie Mahnken, Katie Byers.
 """
 
-from flask import Flask, render_template, redirect, flash
+from flask import Flask, render_template, redirect, flash, session
 import jinja2
 
 import melons
@@ -49,9 +49,8 @@ def show_melon(melon_id):
 
     Show all info about a melon. Also, provide a button to buy that melon.
     """
-
     melon = melons.get_by_id(melon_id)
-    print(melon)
+
     return render_template("melon_details.html",
                            display_melon=melon)
 
@@ -63,44 +62,69 @@ def add_to_cart(melon_id):
     When a melon is added to the cart, redirect browser to the shopping cart
     page and display a confirmation message: 'Melon successfully added to
     cart'."""
-
-    # TODO: Finish shopping cart functionality
-
-    # The logic here should be something like:
-    #
+    # session = {
+    #     "cart": {
+    #         melon_id: count,
+    #         melon_id: count
+    #     }
+    # }
+    
     # - check if a "cart" exists in the session, and create one (an empty
     #   dictionary keyed to the string "cart") if not
+    session["cart"] = session.get("cart", {})
     # - check if the desired melon id is the cart, and if not, put it in
-    # - increment the count for that melon id by 1
-    # - flash a success message
-    # - redirect the user to the cart page
+    # - increment the count for that melon id by 1. session = {cart: {melon: amount, melon: amount}}
+    # session["cart"][melon_id] = session["cart"].get(melon_id, 0)
+    # session["cart"][melon_id] += 1 
 
-    return "Oops! This needs to be implemented!"
+    
+    # dict[key] = dict.get(key, <if no key, initial value goes here, {}, '', 0>)
+    session["cart"][melon_id] = session["cart"].get(melon_id, 0) + 1
+
+    # - flash a success message
+    flash("Melon successfully added to cart.")
+    # - redirect the user to the cart page
+    print('*' * 20)
+    print(session["cart"])
+    # return render_template("cart.html")
+    return redirect("/cart")
 
 
 @app.route("/cart")
 def show_shopping_cart():
     """Display content of shopping cart."""
 
-    # TODO: Display the contents of the shopping cart.
-
-    # The logic here will be something like:
-    #
+    if session.get('cart') == None:
+        flash('There is nothing in your cart.')
+        # return redirect('/melons')
+        return render_template("cart.html", total_melons=[], order_cost=0)
+    
     # - get the cart dictionary from the session
+    cart = session["cart"]
     # - create a list to hold melon objects and a variable to hold the total
     #   cost of the order
+    total_melons = []
+    order_cost = 0
     # - loop over the cart dictionary, and for each melon id:
+    for melon_id, quantity in cart.items():
+        melon = melons.get_by_id(melon_id)
+        cost = melon.price * quantity
+        order_cost += cost
+        melon.quantity = quantity
+        melon.cost = cost
+        total_melons.append(melon)
     #    - get the corresponding Melon object
     #    - compute the total cost for that type of melon
     #    - add this to the order total
     #    - add quantity and total cost as attributes on the Melon object
     #    - add the Melon object to the list created above
+    
     # - pass the total order cost and the list of Melon objects to the template
     #
     # Make sure your function can also handle the case wherein no cart has
     # been added to the session
 
-    return render_template("cart.html")
+    return render_template("cart.html", total_melons=total_melons, order_cost=order_cost)
 
 
 @app.route("/login", methods=["GET"])
