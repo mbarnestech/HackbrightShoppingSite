@@ -32,6 +32,11 @@ class Melon:
         """Return price formatted as string $x.xx"""
 
         return f"${self.price:.2f}"
+    
+    def cost_str(self):
+        """Return price formatted as string $x.xx"""
+
+        return f"${self.cost:.2f}"
 
     def __repr__(self):
         """Convenience method to show information about melon in console."""

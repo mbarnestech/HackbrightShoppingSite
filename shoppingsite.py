@@ -72,20 +72,23 @@ def add_to_cart(melon_id):
     # - check if a "cart" exists in the session, and create one (an empty
     #   dictionary keyed to the string "cart") if not
     session["cart"] = session.get("cart", {})
+    
     # - check if the desired melon id is the cart, and if not, put it in
     # - increment the count for that melon id by 1. session = {cart: {melon: amount, melon: amount}}
     # session["cart"][melon_id] = session["cart"].get(melon_id, 0)
     # session["cart"][melon_id] += 1 
 
     
+    
     # dict[key] = dict.get(key, <if no key, initial value goes here, {}, '', 0>)
     session["cart"][melon_id] = session["cart"].get(melon_id, 0) + 1
-
+        
     # - flash a success message
     flash("Melon successfully added to cart.")
+    
     # - redirect the user to the cart page
-    print('*' * 20)
-    print(session["cart"])
+    # print('*' * 20)
+    # print(session["cart"])
     # return render_template("cart.html")
     return redirect("/cart")
 
@@ -112,6 +115,8 @@ def show_shopping_cart():
         order_cost += cost
         melon.quantity = quantity
         melon.cost = cost
+        melon.formatted_price = melon.price_str()
+        melon.formatted_cost = melon.cost_str()
         total_melons.append(melon)
     #    - get the corresponding Melon object
     #    - compute the total cost for that type of melon

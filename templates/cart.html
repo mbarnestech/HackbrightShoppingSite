@@ -18,14 +18,14 @@
         <tr>
             <td>{{ melon.common_name }}</td>
             <td>{{ melon.quantity }}</td>
-            <td>{{ melon.price }}</td>
-            <td>{{ melon.cost }}</td>
+            <td>{{ melon.formatted_price }}</td>
+            <td>{{ melon.formatted_cost }}</td>
         </tr>
         {% endfor %}
         </tbody>
     </table>
 
-    <h3>Total: {{ order_cost }}</h3>
+    <h3>Total: ${{ '%0.2f' | format(order_cost) }}</h3>
 
     <a href="/checkout" class="btn btn-large btn-primary">Check Out</a>
 
